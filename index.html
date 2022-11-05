@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.12.5/ace.js" ></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<link rel="stylesheet" href="./css/style.css">
+
+</head> 
+
+<body> 
+<nav>
+    <div id="button-container">
+        <img id="run-button" onclick="runCode()" class="button" src="icons/debug-start.svg"></div>  
+        <img id="reload-button" onclick="showGraph()" class="button" src="icons/graph-scatter.svg"></div>  
+    </div>
+</nav>
+<div id="page-container">
+    <div id="editor-container" class="container"> 
+        <div id="editor">let Nodes=[1, 2, 3, 4, 5];
+let Edges=[(1,2), (1,3), (2,4), (2,5)];
+let graph = new Graph(Nodes, Edges);
+console.log(graph.numNodes, graph.numEdges);
+        </div>
+
+    </div>
+
+
+    <div id="chart-container" class="container"> 
+        <div id="chart">
+            
+        </div>
+    </div>
+</div> 
+
+
+ 
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/one_dark");
+    editor.session.setMode("ace/mode/javascript");
+    editor.resize()
+</script>
+
+<script src="js/graph-lib.js"></script> 
+
+<!--Define Functions-->
+<script> 
+    function runCode() {
+        console.log('Running!');
+        eval(editor.getValue());
+    }
+
+    function showGraph(graph) {
+        document.getElementById("chart").innerHTML = "Graph should be here";
+    }
+</script>
+
+</body>
+
+
+</html> 

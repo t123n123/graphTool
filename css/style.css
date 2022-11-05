@@ -4,7 +4,7 @@ body {
 
 nav {
     background-color: #d19a66;
-    height: 5vh;
+    height: 10vh;
     vertical-align : middle;
 }
 
@@ -13,15 +13,19 @@ nav {
     float: right
 }
 
+svg text{
+    pointer-events: none;
+ }
+
 .button {
-    background-color: #98c379;
-    height: 4vh;
-    margin-top: 0.5vh;
+    background-color: #282c34;
+    height: 8vh;
+    margin-top: 1vh;
     aspect-ratio: 1/1;
-    margin-right: 0.5vh;
-    padding: 0.5vh;
+    margin-right: 1vh;
+    padding: 1vh;
     box-sizing: border-box;
-    border: 2px solid #98c379;
+    border: 2px solid #d19a66;
     transition-duration: 0.4s;
     float: right;
 }

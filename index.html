@@ -20,7 +20,28 @@
 let Edges=[[1,2], [1,3], [2,4], [2,5]];
 
 let graph = new Graph(Nodes, Edges);
-displayGraph(graph);</div>
+displayGraph(graph);
+
+let Seen = {};
+
+async function dfs(node) {
+    updateNodeColor(node, 'red');
+    await waitSleep(500);
+    Seen[node] = 'true';
+    for (var neighbour of graph.Neighbours[node]) {
+        if(Seen[neighbour] !== 'true') {
+            updateNodeColor(node, 'blue');
+            await dfs(neighbour);
+            updateNodeColor(node, 'red');
+            await waitSleep(500);
+        }    
+        
+    }
+    updateNodeColor(node, 'blue');
+}
+
+dfs(1);
+</div>
 
     </div>
 
@@ -49,17 +70,12 @@ displayGraph(graph);</div>
 <script> 
     function runCode() {
         console.log('Running!');
-        eval(editor.getValue());
-    }
-
-    function showGraph() {
-        eval(editor.getValue());
+        eval("(async () => {" + editor.getValue() + "})()");
     }
 
     
 </script>
 
 </body>
-
 
 </html> 

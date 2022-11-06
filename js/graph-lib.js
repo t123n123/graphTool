@@ -10,48 +10,77 @@ class Graph{
         this.Edges = Edges;
         this.Neighbours = {};
         for(let nodeIndex = 0; nodeIndex < Nodes.length; nodeIndex++) {
-            console.log(Nodes[nodeIndex]);
             this.Neighbours[Nodes[nodeIndex]] = [];
         }
 
         for(let edgeIndex = 0; edgeIndex < Edges.length; edgeIndex++) {
-            console.log(Edges[edgeIndex]);
-            console.log(Edges[edgeIndex][0]);
-            console.log(Edges[edgeIndex][1]);
             this.Neighbours[Edges[edgeIndex][0]].push(Edges[edgeIndex][1]);
             if(!isDirected) {
                 this.Neighbours[Edges[edgeIndex][1]].push(Edges[edgeIndex][0]);
             }
         }
     }
-}
 
+ 
+}
 
 
 
 function displayGraph(Graph) {
+    Nodes = [];
+    Edges = [];
+    colorEdge = {};
+    colorNode = {};
+    positionNode = {};
     d3.select('#chart').select('#root').remove();
     chart = d3.select('#chart').append('g').attr('id', 'root');
+    chart.append('g').attr('id', 'edges');
+    chart.append('g').attr('id', 'nodes');
     Nodes = Graph.Nodes;
     Edges = Graph.Edges;
     for(let nodeIndex = 0; nodeIndex < Nodes.length; nodeIndex++) {
         displayNode(nodeIndex);
-        // colorNode[nodeIndex] = Graph?.colorNode[nodeIndex];
     } 
     for(let edgeIndex = 0; edgeIndex < Edges.length; edgeIndex++) {
         displayEdge(edgeIndex);
-        // colorEdge[edgeIndex] = Graph?.colorEdge[edgeIndex];
     } 
 }
 
+function selectNode(nodeIndex) {
+    return d3.select("#Node_" + Nodes[nodeIndex]);
+}
+function selectNodeByLabel(nodeLabel) {
+    return d3.select("#Node_" + nodeLabel)
+}
+
+function selectEdge(edgeIndex) {
+    let label1 = Edges[edgeIndex][0];
+    let label2 = Edges[edgeIndex][1];
+    return d3.select("#Edge_" + label1 + '_' + label2);
+}
+
+function selectEdgeByLabels(edgeLabels) {
+    let label1 = edgeLabels[0];
+    let label2 = edgeLabels[1];
+    return d3.select("#Edge_" + label1 + '_' + label2);
+}
+
+function updateNodeColor(nodeLabel, newColor) {
+    colorNode[nodeLabel] = newColor;
+    selectNodeByLabel(nodeLabel).select("circle").style("fill", newColor);
+}
+
+function updateEdgeColor(edgeLabels, newColor) {
+    colorEdge[edgeLabels] = newColor;
+    selectEdgeByLabels(edgeLabels).style("stroke", newColor);
+}
+
 function updateEdges() {
-    console.log(positionNode);
     for(let edgeIndex = 0; edgeIndex < Edges.length; edgeIndex++) {
-        console.log(edgeIndex);
-        label1 = Edges[edgeIndex][0];
-        label2 = Edges[edgeIndex][1]; 
-        d3.select("#Edge" + edgeIndex)
-        .attr("x1", positionNode[label1][0])
+        let label1 = Edges[edgeIndex][0];
+        let label2 = Edges[edgeIndex][1];        
+
+        selectEdge(edgeIndex).attr("x1", positionNode[label1][0])
         .attr("y1", positionNode[label1][1])
         .attr("x2", positionNode[label2][0])
         .attr("y2", positionNode[label2][1])
@@ -77,18 +106,27 @@ function displayNode(nodeIndex) {
     let label = Nodes[nodeIndex];
     let color = colorNode[nodeIndex];
 
-    var svg = d3.select("#root");
+    var svg = d3.select("#root").select("#nodes");
 
     var dragHandler = d3.drag()
         .on('drag', dragged);
-        // .on('start', dragstarted);
 
-    var node = svg.append("g");
+    var node = svg.append("g").attr('id', "Node_" +label);
+
+    // Calculate positon on the cirlce 
+
+    let startAngle = -Math.PI;
+    let stepAngle = (Math.PI * 2) / Nodes.length;
+
+    let nodeAngle = startAngle + nodeIndex * stepAngle;
+
+    let positionX = Math.sin(nodeAngle) * 20 * Nodes.length + 500;
+    let positionY = Math.cos(nodeAngle) * 20 * Nodes.length + 300;
 
     var node_circle = node.append("circle")
-        .attr("cx", 50 + nodeIndex*50)
-        .attr("cy", 50)
-        .attr('r', 20)
+        .attr("cx", positionX)
+        .attr("cy", positionY)
+        .attr('r', 30)
         .style("fill", "#d19a66");
 
     if(color !== undefined) {
@@ -97,14 +135,14 @@ function displayNode(nodeIndex) {
         colorNode[nodeIndex] = "#d19a66";
     }
 
-    positionNode[label] = [50 + nodeIndex*50,50];
+    positionNode[label] = [positionX, positionY];
 
     if(label !== undefined) {
         node = node
         .append("text")
         .style("fill", "black")
-        .attr("x",  50 + nodeIndex*50)
-        .attr("y", 50)
+        .attr("x",  positionX)
+        .attr("y", positionY)
         .text(label);
     }
 
@@ -112,16 +150,25 @@ function displayNode(nodeIndex) {
 }
 
 function displayEdge(edgeIndex) {
+
     color = colorEdge[edgeIndex];
     label1 = Edges[edgeIndex][0];
     label2 = Edges[edgeIndex][1];
-    var svg = d3.select("#root");
+    var svg = d3.select("#root").select("#edges");
     var edge = svg.append("line")
-    .style("stroke", "lightgreen")
+    .style("stroke", "#61afef")
     .style("stroke-width", 2)
     .attr("x1", positionNode[label1][0])
     .attr("y1", positionNode[label1][1])
     .attr("x2", positionNode[label2][0])
     .attr("y2", positionNode[label2][1])
-    .attr("id", "Edge" + edgeIndex);
+    .attr("id", "Edge_" + label1 + "_" + label2);
+
+    if(color !== undefined) {
+        edge.style("stroke", color);
+    }
+}
+
+function waitSleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

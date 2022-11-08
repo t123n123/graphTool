@@ -31,7 +31,6 @@ function displayGraph(Graph) {
     Edges = [];
     colorEdge = {};
     colorNode = {};
-    positionNode = {};
     d3.select('#chart').select('#root').remove();
     chart = d3.select('#chart').append('g').attr('id', 'root');
     chart.append('g').attr('id', 'edges');
@@ -102,6 +101,10 @@ function dragged() {
     updateEdges();
 }
 
+function resetNodePositions() {
+    positionNode = {};
+}
+
 function displayNode(nodeIndex) {
     let label = Nodes[nodeIndex];
     let color = colorNode[nodeIndex];
@@ -120,12 +123,15 @@ function displayNode(nodeIndex) {
 
     let nodeAngle = startAngle + nodeIndex * stepAngle;
 
-    let positionX = Math.sin(nodeAngle) * 20 * Nodes.length + 500;
-    let positionY = Math.cos(nodeAngle) * 20 * Nodes.length + 300;
-
+    if(positionNode[label] === undefined) {
+        console.log("new node");
+        let positionX = Math.sin(nodeAngle) * 20 * Nodes.length + 500;
+        let positionY = Math.cos(nodeAngle) * 20 * Nodes.length + 300;
+        positionNode[label] = [positionX, positionY];
+    }
     var node_circle = node.append("circle")
-        .attr("cx", positionX)
-        .attr("cy", positionY)
+        .attr("cx", positionNode[label][0])
+        .attr("cy", positionNode[label][1])
         .attr('r', 30)
         .style("fill", "#d19a66");
 
@@ -135,14 +141,14 @@ function displayNode(nodeIndex) {
         colorNode[nodeIndex] = "#d19a66";
     }
 
-    positionNode[label] = [positionX, positionY];
+
 
     if(label !== undefined) {
         node = node
         .append("text")
         .style("fill", "black")
-        .attr("x",  positionX)
-        .attr("y", positionY)
+        .attr("x",  positionNode[label][0])
+        .attr("y", positionNode[label][1])
         .text(label);
     }
 

@@ -2,39 +2,44 @@ colorNode = {};
 colorEdge = {};
 
 positionNode = {};
+Neighbours = {};
 
 
-class Graph{ 
-    constructor (Nodes, Edges, isDirected = false) {
-        this.Nodes = Nodes;
-        this.Edges = Edges;
-        this.Neighbours = {};
-        for(let nodeIndex = 0; nodeIndex < Nodes.length; nodeIndex++) {
-            this.Neighbours[Nodes[nodeIndex]] = [];
-        }
+function computeNeighbours(nodes, edges, isDirected = false) {
+	Neighbours = {};
+	for(let nodeIndex = 0; nodeIndex < nodes.length; nodeIndex++) {
+		Neighbours[nodes[nodeIndex]] = [];
+	}
 
-        for(let edgeIndex = 0; edgeIndex < Edges.length; edgeIndex++) {
-            this.Neighbours[Edges[edgeIndex][0]].push(Edges[edgeIndex][1]);
-            if(!isDirected) {
-                this.Neighbours[Edges[edgeIndex][1]].push(Edges[edgeIndex][0]);
-            }
-        }
-    }
+	for(let edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
+		Neighbours[edges[edgeIndex][0]].push(edges[edgeIndex][1]);
+		if(!isDirected) {
+			Neighbours[edges[edgeIndex][1]].push(edges[edgeIndex][0]);
+		}
+	}	
 }
 
 
-
-function displayGraph(Graph) {
+function displayGraph(nodes, edges) {
+	// reset global nodes and edges 
     Nodes = [];
     Edges = [];
     colorEdge = {};
     colorNode = {};
+
+	// reset the canvas 
     d3.select('#chart').select('#root').remove();
-    chart = d3.select('#chart').append('g').attr('id', 'root');
+    
+	// add root element
+	chart = d3.select('#chart').append('g').attr('id', 'root');
     chart.append('g').attr('id', 'edges');
     chart.append('g').attr('id', 'nodes');
-    Nodes = Graph.Nodes;
-    Edges = Graph.Edges;
+
+	// load nodes and edges 
+    Nodes = nodes;
+    Edges = edges;
+
+	// display nodes and edges on canvas 
     for(let nodeIndex = 0; nodeIndex < Nodes.length; nodeIndex++) {
         displayNode(nodeIndex);
     } 
@@ -43,14 +48,14 @@ function displayGraph(Graph) {
     } 
 }
 
-function selectNode(nodeIndex) {
+function selectNodeByIndex(nodeIndex) {
     return d3.select("#Node_" + Nodes[nodeIndex]);
 }
 function selectNodeByLabel(nodeLabel) {
     return d3.select("#Node_" + nodeLabel)
 }
 
-function selectEdge(edgeIndex) {
+function selectEdgeByIndex(edgeIndex) {
     let label1 = Edges[edgeIndex][0];
     let label2 = Edges[edgeIndex][1];
     return d3.select("#Edge_" + label1 + '_' + label2);
@@ -73,11 +78,13 @@ function updateEdgeColor(edgeLabels, newColor) {
 }
 
 function updateEdges() {
+	// update edge endpoint positions in case some node moved 
+	// TODO: update only edges which have a moved node 
     for(let edgeIndex = 0; edgeIndex < Edges.length; edgeIndex++) {
         let label1 = Edges[edgeIndex][0];
         let label2 = Edges[edgeIndex][1];        
 
-        selectEdge(edgeIndex).attr("x1", positionNode[label1][0])
+        selectEdgeByIndex(edgeIndex).attr("x1", positionNode[label1][0])
         .attr("y1", positionNode[label1][1])
         .attr("x2", positionNode[label2][0])
         .attr("y2", positionNode[label2][1])

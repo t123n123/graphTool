@@ -2,7 +2,6 @@ colorNode = {};
 colorEdge = {};
 
 positionNode = {};
-Neighbours = {};
 
 
 function computeNeighbours(nodes, edges, isDirected = false) {
@@ -16,7 +15,8 @@ function computeNeighbours(nodes, edges, isDirected = false) {
 		if(!isDirected) {
 			Neighbours[edges[edgeIndex][1]].push(edges[edgeIndex][0]);
 		}
-	}	
+	}
+	return Neighbours;
 }
 
 
